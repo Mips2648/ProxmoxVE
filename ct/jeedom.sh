@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-source <(curl -s https://raw.githubusercontent.com/Mips2648/ProxmoxVE/refs/head/jeedom/misc/build.func)
+source <(curl -s https://raw.githubusercontent.com/Mips2648/ProxmoxVE/refs/heads/jeedom/misc/build.func)
 # Copyright (c) 2021-2025 community-scripts ORG
 # Author: Mips
 # License: MIT | https://github.com/community-scripts/ProxmoxVE/raw/main/LICENSE
