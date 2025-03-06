@@ -26,7 +26,7 @@ msg_ok "Installed Dependencies"
 msg_info "Setup ${APPLICATION}"
 wget -q https://raw.githubusercontent.com/jeedom/core/master/install/install.sh
 chmod +x install.sh
-./install.sh
+$STD ./install.sh
 msg_ok "Setup ${APPLICATION}"
 
 motd_ssh
