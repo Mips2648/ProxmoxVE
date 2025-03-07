@@ -85,7 +85,7 @@ msg_ok "Post installation done"
 
 msg_info "Check installation"
 $STD ./install.sh -s 12
-msg_ok "Installation checked, everything is successfuly installed. A reboot is required."
+msg_ok "Installation checked, everything is successfuly installed. A reboot is recommended."
 
 motd_ssh
 customize
