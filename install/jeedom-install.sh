@@ -25,7 +25,7 @@ $STD apt-get install -y \
   curl \
   sudo \
   mc \
-  lsb_release \
+  lsb-release \
   grep
 msg_ok "Dependencies installed"
 
