@@ -33,16 +33,22 @@ function update_script() {
     check_container_storage
     check_container_resources
 
+    # OS Check
+    if ! lsb_release -d | grep -q "Debian GNU/Linux"; then
+        msg_error "Wrong OS detected. Jeedom only supports Debian"
+        exit 1
+    fi
+
     # Check if installation is present | -f for file, -d for folder
     if [[ ! -f /var/www/html/core/config/version ]]; then
         msg_error "No ${APP} Installation Found!"
         exit
     fi
 
-    msg_info "Updating Debian"
+    msg_info "Updating OS"
     $STD apt-get update
     $STD apt-get -y upgrade
-    msg_ok "Updated Debian, you can now update Jeedom from the WebUI if required."
+    msg_ok "OS updated, you can now update Jeedom from the Web UI."
     exit
 }
 

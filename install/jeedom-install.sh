@@ -12,10 +12,15 @@ verb_ip6
 catch_errors
 setting_up_container
 network_check
-update_os
+
+# update_os # don't call this one because it is a bad idea to remove /usr/lib/python3.*/EXTERNALLY-MANAGED in this context
+msg_info "Upgrade OS"
+$STD apt-get update
+$STD apt-get -o Dpkg::Options::="--force-confold" -y dist-upgrade
+msg_ok "OS upgraded"
 
 # Installing Dependencies with the 3 core dependencies (curl;sudo;mc)
-msg_info "Installing Dependencies"
+msg_info "Installing dependencies"
 $STD apt-get install -y \
   curl \
   sudo \
@@ -25,20 +30,16 @@ msg_ok "Dependencies installed"
 # OS Check
 msg_info "Checking OS version"
 if ! lsb_release -d | grep -q "Debian GNU/Linux"; then
-  msg_error "Wrong OS detected. This script only supports Debian 11 or 12."
+  msg_error "Wrong OS detected. Jeedom only supports Debian"
   exit 1
 fi
 msg_ok "OS check done"
 
 # Setup App
-msg_info "Downloading ${APPLICATION} installation script"
+msg_info "Downloading Jeedom installation script"
 wget -q https://raw.githubusercontent.com/jeedom/core/master/install/install.sh
 chmod +x install.sh
 msg_ok "Installation script downloaded"
-
-msg_info "Upgrade OS"
-$STD ./install.sh -s 1
-msg_ok "OS upgraded"
 
 msg_info "Install Jeedom main dependencies"
 $STD ./install.sh -s 2
@@ -82,7 +83,7 @@ msg_ok "Post installation done"
 
 msg_info "Check installation"
 $STD ./install.sh -s 12
-msg_ok "Installation checked, everything seems successfuly installed"
+msg_ok "Installation checked, everything is successfuly installed. A reboot is required."
 
 motd_ssh
 customize
