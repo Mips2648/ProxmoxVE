@@ -24,7 +24,9 @@ msg_info "Installing dependencies"
 $STD apt-get install -y \
   curl \
   sudo \
-  mc
+  mc \
+  lsb_release \
+  grep
 msg_ok "Dependencies installed"
 
 # OS Check
