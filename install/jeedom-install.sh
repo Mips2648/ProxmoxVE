@@ -20,17 +20,25 @@ $STD apt-get install -y \
   curl \
   sudo \
   mc
-msg_ok "Installed Dependencies"
+msg_ok "Dependencies installed"
+
+# OS Check
+msg_info "Checking OS version"
+if ! lsb_release -d | grep -q "Debian GNU/Linux"; then
+  msg_error "Wrong OS detected. This script only supports Debian 11 or 12."
+  exit 1
+fi
+msg_ok "OS check done"
 
 # Setup App
-msg_info "Downloading ${APPLICATION} installation"
+msg_info "Downloading ${APPLICATION} installation script"
 wget -q https://raw.githubusercontent.com/jeedom/core/master/install/install.sh
 chmod +x install.sh
-msg_ok "Downloaded installation script"
+msg_ok "Installation script downloaded"
 
 msg_info "Upgrade OS"
 $STD ./install.sh -s 1
-msg_ok "Upgraded OS"
+msg_ok "OS upgraded"
 
 msg_info "Install Jeedom main dependencies"
 $STD ./install.sh -s 2
@@ -44,7 +52,7 @@ msg_info "Install Apache"
 $STD ./install.sh -s 4
 msg_ok "Apache installed"
 
-msg_info "Install PHP"
+msg_info "Install PHP and dependencies"
 $STD ./install.sh -s 5
 msg_ok "PHP installed"
 
@@ -60,11 +68,11 @@ msg_info "Jeedom customisation"
 $STD ./install.sh -s 8
 msg_ok "Jeedom customisation done"
 
-msg_info "Configure Jeedom"
+msg_info "Configuring Jeedom"
 $STD ./install.sh -s 9
 msg_ok "Jeedom configured"
 
-msg_info "Install Jeedom"
+msg_info "Installing Jeedom"
 $STD ./install.sh -s 10
 msg_ok "Jeedom installed"
 
