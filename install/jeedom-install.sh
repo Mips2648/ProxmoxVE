@@ -43,7 +43,7 @@ wget -q https://raw.githubusercontent.com/jeedom/core/master/install/install.sh
 chmod +x install.sh
 msg_ok "Installation script downloaded"
 
-msg_info "Install Jeedom main dependencies"
+msg_info "Install Jeedom main dependencies, please wait"
 $STD ./install.sh -s 2
 msg_ok "Installed Jeedom main dependencies"
 
