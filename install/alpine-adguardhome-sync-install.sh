@@ -30,7 +30,7 @@ get_latest_release() {
 LATEST_VERSION=$(get_latest_release)
 
 msg_info "Installing Adguardhome-Sync $LATEST_VERSION"
-$STD go install github.com/bakito/adguardhome-sync@latest
+go install github.com/bakito/adguardhome-sync@latest
 msg_ok "Installed Adguardhome-Sync $LATEST_VERSION"
 
 motd_ssh
