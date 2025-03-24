@@ -19,17 +19,6 @@ variables
 color
 catch_errors
 
-function update_adguardhomesync() {
-    RELEASE=$1
-    mkdir -p /opt/adguardhome-sync
-    cd /opt/adguardhome-sync
-    temp_file=$(mktemp)
-    wget -q https://github.com/bakito/adguardhome-sync/releases/download/v${RELEASE}/adguardhome-sync_${RELEASE}_linux_amd64.tar.gz -O $temp_file
-    tar -xzf ${temp_file} -C /opt/adguardhome-sync/ --overwrite
-    echo "${RELEASE}" >"/opt/adguardhome-sync/version.txt"
-    rm -f "$temp_file"
-}
-
 function update_script() {
 
     RELEASE=$(curl -s https://api.github.com/repos/bakito/adguardhome-sync/releases/latest | grep "tag_name" | awk '{print substr($2, 3, length($2)-4) }')
@@ -41,7 +30,12 @@ function update_script() {
 
         # Execute Update
         msg_info "Updating Adguardhome-Sync to v${RELEASE}"
-        update_adguardhomesync "$RELEASE"
+        mkdir -p /opt/adguardhome-sync
+        temp_file=$(mktemp)
+        wget -q https://github.com/bakito/adguardhome-sync/releases/download/v${RELEASE}/adguardhome-sync_${RELEASE}_linux_amd64.tar.gz -O $temp_file
+        tar -xzf ${temp_file} -C /opt/adguardhome-sync/ --overwrite
+        echo "${RELEASE}" >"/opt/adguardhome-sync/version.txt"
+        rm -f "$temp_file"
         msg_ok "Updated Adguardhome-Sync to v${RELEASE}"
 
         # Starting Services
@@ -53,7 +47,7 @@ function update_script() {
     else
         msg_ok "No update required. Adguardhome-Sync is already at v${RELEASE}"
     fi
-    exit
+    exit 0
 }
 
 start
