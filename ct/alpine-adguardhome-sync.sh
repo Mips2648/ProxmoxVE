@@ -54,8 +54,15 @@ config_adguardhomesync() {
             echo "Invalid IP address. Please try again."
         fi
     done
-    read -r -p "Enter port of the origin instance (Default: ${DEFAULT_PORT}): " ORIGIN_PORT
-    ORIGIN_PORT=${ORIGIN_PORT:-$DEFAULT_PORT}
+    while true; do
+        read -r -p "Enter port of the origin instance (Default: ${DEFAULT_PORT}): " ORIGIN_PORT
+        ORIGIN_PORT=${ORIGIN_PORT:-$DEFAULT_PORT}
+        if [[ $ORIGIN_PORT =~ ^[0-9]+$ ]] && [ "$ORIGIN_PORT" -ge 1 ] && [ "$ORIGIN_PORT" -le 65535 ]; then
+            break
+        else
+            echo "Invalid port. Please enter a number between 1 and 65535."
+        fi
+    done
     read -r -p "Enter username of the origin instance: " ORIGIN_USER
     read -r -p "Enter password of the origin instance: " ORIGIN_PASS
 
@@ -67,8 +74,15 @@ config_adguardhomesync() {
             echo "Invalid IP address. Please try again."
         fi
     done
-    read -r -p "Enter port of the replica instance (Default: ${DEFAULT_PORT}): " REPLICA_PORT
-    REPLICA_PORT=${REPLICA_PORT:-$DEFAULT_PORT}
+    while true; do
+        read -r -p "Enter port of the origin instance (Default: ${DEFAULT_PORT}): " REPLICA_PORT
+        REPLICA_PORT=${REPLICA_PORT:-$DEFAULT_PORT}
+        if [[ $REPLICA_PORT =~ ^[0-9]+$ ]] && [ "$REPLICA_PORT" -ge 1 ] && [ "$REPLICA_PORT" -le 65535 ]; then
+            break
+        else
+            echo "Invalid port. Please enter a number between 1 and 65535."
+        fi
+    done
     read -r -p "Enter username of the replica instance: " REPLICA_USER
     read -r -p "Enter password of the replica instance: " REPLICA_PASS
 
