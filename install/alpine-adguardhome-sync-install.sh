@@ -64,7 +64,7 @@ continueOnError: true
 
 origin:
   # url of the origin instance
-  url: https://${ORIGN_IP}:${ORIGIN_PORT}
+  url: http://${ORIGN_IP}:${ORIGIN_PORT}
   # apiPath: define an api path if other than "/control"
   # insecureSkipVerify: true # disable tls check
   username: ${ORIGIN_USER}

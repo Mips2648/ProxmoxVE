@@ -5,7 +5,7 @@ source <(curl -s https://raw.githubusercontent.com/Mips2648/ProxmoxVE/refs/heads
 # License: MIT | https://github.com/community-scripts/ProxmoxVE/raw/main/LICENSE
 # Source: https://github.com/bakito/adguardhome-sync
 
-APP="Alpine-Adguardhome-Sync"
+APP="Adguardhome-Sync"
 var_tags="Adguardhome-sync;alpine"
 var_cpu="1"
 var_ram="256"
@@ -70,7 +70,7 @@ continueOnError: true
 
 origin:
   # url of the origin instance
-  url: https://${ORIGN_IP}:${ORIGIN_PORT}
+  url: http://${ORIGN_IP}:${ORIGIN_PORT}
   # apiPath: define an api path if other than "/control"
   # insecureSkipVerify: true # disable tls check
   username: ${ORIGIN_USER}
@@ -154,6 +154,7 @@ function update_script() {
             ;;
         2)
             config_adguardhomesync
+            rc-service adguardhome-sync restart
             exit
             ;;
         esac
