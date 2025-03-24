@@ -40,7 +40,7 @@ install_adguardhomesync() {
 config_adguardhomesync() {
   DEFAULT_PORT=80
   echo
-  read -r -p "Enter IP of the origin instance: " ORIGN_IP
+  read -r -p "Enter IP of the origin instance: " ORIGIN_IP
   read -r -p "Enter port of the origin instance (Default: ${DEFAULT_PORT}): " ORIGIN_PORT
   ORIGIN_PORT=${ORIGIN_PORT:-$DEFAULT_PORT}
   read -r -p "Enter username of the origin instance: " ORIGIN_USER
@@ -64,7 +64,7 @@ continueOnError: true
 
 origin:
   # url of the origin instance
-  url: http://${ORIGN_IP}:${ORIGIN_PORT}
+  url: http://${ORIGIN_IP}:${ORIGIN_PORT}
   # apiPath: define an api path if other than "/control"
   # insecureSkipVerify: true # disable tls check
   username: ${ORIGIN_USER}
