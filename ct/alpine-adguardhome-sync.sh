@@ -147,7 +147,6 @@ function update_script() {
             clear
             exit-script
         fi
-        header_info "$APP"
         case $CHOICE in
         1)
             update_adguardhomesync
