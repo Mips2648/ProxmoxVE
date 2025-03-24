@@ -131,7 +131,7 @@ command_background=true
 pidfile="/run/adguardhome-sync.pid"
 command_args="--config /opt/adguardhome-sync/adguardhome-sync.yaml run"
 EOF
-  systemctl enable -q --now adguardhome-sync.service
+  rc-service adguardhome-sync start
 }
 
 msg_info "Installing Adguardhome-Sync ${LATEST_VERSION}"
