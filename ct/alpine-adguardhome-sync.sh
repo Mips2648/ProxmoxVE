@@ -21,6 +21,13 @@ catch_errors
 
 function update_script() {
 
+    header_info
+
+    if [ ! -d /opt/adguardhome-sync ]; then
+        msg_error "No ${APP} Installation Found!"
+        exit 1
+    fi
+
     RELEASE=$(curl -s https://api.github.com/repos/bakito/adguardhome-sync/releases/latest | grep "tag_name" | awk '{print substr($2, 3, length($2)-4) }')
     if [[ "${RELEASE}" != "$(cat /opt/adguardhome-sync/version.txt)" ]] || [[ ! -f /opt/adguardhome-sync/version.txt ]]; then
         # Stopping Services
