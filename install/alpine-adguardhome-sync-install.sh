@@ -39,7 +39,7 @@ install_adguardhomesync() {
 
 config_adguardhomesync() {
   DEFAULT_PORT=80
-
+  echo
   read -r -p "Enter IP of the origin instance: " ORIGN_IP
   read -r -p "Enter port of the origin instance (Default: ${DEFAULT_PORT}): " ORIGIN_PORT
   ORIGIN_PORT=${ORIGIN_PORT:-$DEFAULT_PORT}
