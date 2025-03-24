@@ -5,7 +5,7 @@ source <(curl -s https://raw.githubusercontent.com/Mips2648/ProxmoxVE/refs/heads
 # License: MIT | https://github.com/community-scripts/ProxmoxVE/raw/main/LICENSE
 # Source: https://github.com/bakito/adguardhome-sync
 
-APP="Adguardhome-Sync"
+APP="Alpine-Adguardhome-Sync"
 var_tags="Adguardhome-sync;alpine"
 var_cpu="1"
 var_ram="256"
