@@ -130,9 +130,7 @@ config_adguardhomesync() {
         exit 1
     fi
 
-    whiptail --title "Summary" --msgbox "Origin Instance:\nIP: ${ORIGIN_IP}\nPort: ${ORIGIN_PORT}\nUsername: ${ORIGIN_USER}\n\nReplica Instance:\nIP: ${REPLICA_IP}\nPort: ${REPLICA_PORT}\nUsername: ${REPLICA_USER}" 15 60
-
-    whiptail --title "Confirmation" --yesno "Is this configuration correct?\nDo you want to continue?" 10 60
+    whiptail --title "Confirmation" --yesno "Please review the configuration:\n\nOrigin Instance:\nIP: ${ORIGIN_IP}\nPort: ${ORIGIN_PORT}\nUsername: ${ORIGIN_USER}\n\nReplica Instance:\nIP: ${REPLICA_IP}\nPort: ${REPLICA_PORT}\nUsername: ${REPLICA_USER}\n\nIs this configuration correct? Do you want to continue?" 20 70
     exit_status=$?
     if [ $exit_status -ne 0 ]; then
         echo "Operation canceled by the user."
