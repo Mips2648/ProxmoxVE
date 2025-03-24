@@ -86,7 +86,7 @@ api:
   # username: username
   # password: password
   # enable api dark mode
-  darkMode: true
+  darkMode: false
 
   # enable metrics on path '/metrics' (api port must be != 0)
   # metrics:
@@ -142,7 +142,7 @@ msg_ok "Installed Adguardhome-Sync ${LATEST_VERSION}"
 
 msg_info "Creating Configuration"
 config_adguardhomesync
-msg_ok "Default configuration created. If you want to change it or if you made a mistake, edit /opt/adguardhome-sync/adguardhome-sync.yaml and restart service"
+msg_ok "Configuration created. If you want to change it or if you made a mistake, edit /opt/adguardhome-sync/adguardhome-sync.yaml and restart service"
 
 msg_info "Creating Service"
 setup_service
