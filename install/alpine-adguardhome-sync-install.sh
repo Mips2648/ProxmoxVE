@@ -40,17 +40,83 @@ install_adguardhomesync() {
 config_adguardhomesync() {
   DEFAULT_PORT=80
   echo
-  read -r -p "Enter IP of the origin instance: " ORIGIN_IP
-  read -r -p "Enter port of the origin instance (Default: ${DEFAULT_PORT}): " ORIGIN_PORT
-  ORIGIN_PORT=${ORIGIN_PORT:-$DEFAULT_PORT}
-  read -r -p "Enter username of the origin instance: " ORIGIN_USER
-  read -r -p "Enter password of the origin instance: " ORIGIN_PASS
+  while true; do
+    read -r -p "Enter IP of the origin instance: " ORIGIN_IP
+    if [[ $ORIGIN_IP =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]] && ping -c 1 -W 1 "$ORIGIN_IP" >/dev/null 2>&1; then
+      break
+    else
+      echo "Invalid IP address. Please try again."
+    fi
+  done
 
-  read -r -p "Enter IP of the replica instance: " REPLICA_IP
-  read -r -p "Enter port of the replica instance (Default: ${DEFAULT_PORT}): " REPLICA_PORT
-  REPLICA_PORT=${REPLICA_PORT:-$DEFAULT_PORT}
-  read -r -p "Enter username of the replica instance: " REPLICA_USER
-  read -r -p "Enter password of the replica instance: " REPLICA_PASS
+  while true; do
+    read -r -p "Enter port of the origin instance (Default: ${DEFAULT_PORT}): " ORIGIN_PORT
+    ORIGIN_PORT=${ORIGIN_PORT:-$DEFAULT_PORT}
+    if [[ $ORIGIN_PORT =~ ^[0-9]+$ ]] && [ "$ORIGIN_PORT" -ge 1 ] && [ "$ORIGIN_PORT" -le 65535 ]; then
+      break
+    else
+      echo "Invalid port. Please enter a number between 1 and 65535."
+    fi
+  done
+
+  while true; do
+    read -r -p "Enter username of the origin instance: " ORIGIN_USER
+    if [[ -n "$ORIGIN_USER" && "$ORIGIN_USER" != *" "* ]]; then
+      break
+    else
+      echo "Invalid username. It must not be empty or contain spaces. Please try again."
+    fi
+  done
+
+  while true; do
+    read -s -r -p "Enter password of the origin instance: " ORIGIN_PASS
+    echo
+    if [[ -n "$ORIGIN_PASS" && "$ORIGIN_PASS" != *" "* ]]; then
+      break
+    else
+      echo "Invalid password. It must not be empty or contain spaces. Please try again."
+    fi
+  done
+
+  while true; do
+    read -r -p "Enter IP of the replica instance: " REPLICA_IP
+    if [[ $REPLICA_IP =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]] && ping -c 1 -W 1 "$REPLICA_IP" >/dev/null 2>&1; then
+      break
+    else
+      echo "Invalid IP address. Please enter a valid and reachable IP."
+    fi
+  done
+
+  while true; do
+    read -r -p "Enter port of the replica instance (Default: ${DEFAULT_PORT}): " REPLICA_PORT
+    REPLICA_PORT=${REPLICA_PORT:-$DEFAULT_PORT}
+    if [[ $REPLICA_PORT =~ ^[0-9]+$ ]] && [ "$REPLICA_PORT" -ge 1 ] && [ "$REPLICA_PORT" -le 65535 ]; then
+      break
+    else
+      echo "Invalid port. Please enter a number between 1 and 65535."
+    fi
+  done
+
+  while true; do
+    read -r -p "Enter username of the replica instance (default: ${ORIGIN_USER}): " REPLICA_USER
+    REPLICA_USER=${REPLICA_USER:-$ORIGIN_USER}
+    if [[ -n "$REPLICA_USER" && "$REPLICA_USER" != *" "* ]]; then
+      break
+    else
+      echo "Invalid username. It must not be empty or contain spaces. Please try again."
+    fi
+  done
+
+  while true; do
+    read -s -r -p "Enter password of the replica instance (default: same as origin): " REPLICA_PASS
+    echo
+    REPLICA_PASS=${REPLICA_PASS:-$ORIGIN_PASS}
+    if [[ -n "$REPLICA_PASS" && "$REPLICA_PASS" != *" "* ]]; then
+      break
+    else
+      echo "Invalid password. It must not be empty or contain spaces. Please try again."
+    fi
+  done
 
   cat <<EOF >/opt/adguardhome-sync/adguardhome-sync.yaml
 # cron expression to run in daemon mode. (default; "" = runs only once)

@@ -54,7 +54,7 @@ config_adguardhomesync() {
             echo "Operation canceled."
             exit 1
         fi
-        if [[ $ORIGIN_IP =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+        if [[ $ORIGIN_IP =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]] && ping -c 1 -W 1 "$ORIGIN_IP" >/dev/null 2>&1; then
             break
         else
             whiptail --title "Invalid Input" --msgbox "Invalid IP address. Please try again." 10 60
@@ -95,7 +95,7 @@ config_adguardhomesync() {
             echo "Operation canceled."
             exit 1
         fi
-        if [[ $REPLICA_IP =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+        if [[ $REPLICA_IP =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]] && ping -c 1 -W 1 "$REPLICA_IP" >/dev/null 2>&1; then
             break
         else
             whiptail --title "Invalid Input" --msgbox "Invalid IP address. Please try again." 10 60
@@ -206,9 +206,9 @@ features:
     accessLists: true
     rewrites: true
 EOF
-
+    clear
     rc-service adguardhome-sync restart
-    msg_ok "Configuration created. If you want to change it or if you made a mistake, edit /opt/adguardhome-sync/adguardhome-sync.yaml and restart service ('rc-service adguardhome-sync {start|stop|restart|status}')"
+    msg_ok "Configuration created. If you want to change it or if you made a mistake, relaunch this wizard or edit /opt/adguardhome-sync/adguardhome-sync.yaml and restart service ('rc-service adguardhome-sync {start|stop|restart|status}')"
 }
 
 function update_script() {
