@@ -67,7 +67,7 @@ config_adguardhomesync() {
     read -r -p "Enter password of the origin instance: " ORIGIN_PASS
 
     while true; do
-        read -r -p "Enter IP of the origin instance: " REPLICA_IP
+        read -r -p "Enter IP of the replica instance: " REPLICA_IP
         if [[ $REPLICA_IP =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
             break
         else
@@ -75,7 +75,7 @@ config_adguardhomesync() {
         fi
     done
     while true; do
-        read -r -p "Enter port of the origin instance (Default: ${DEFAULT_PORT}): " REPLICA_PORT
+        read -r -p "Enter port of the replica instance (Default: ${DEFAULT_PORT}): " REPLICA_PORT
         REPLICA_PORT=${REPLICA_PORT:-$DEFAULT_PORT}
         if [[ $REPLICA_PORT =~ ^[0-9]+$ ]] && [ "$REPLICA_PORT" -ge 1 ] && [ "$REPLICA_PORT" -le 65535 ]; then
             break
