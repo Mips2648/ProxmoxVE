@@ -126,6 +126,7 @@ features:
     rewrites: true
 EOF
 
+    rc-service adguardhome-sync restart
     msg_ok "Configuration created. If you want to change it or if you made a mistake, edit /opt/adguardhome-sync/adguardhome-sync.yaml and restart service ('rc-service adguardhome-sync {start|stop|restart|status}')"
 }
 
@@ -150,16 +151,16 @@ function update_script() {
         case $CHOICE in
         1)
             update_adguardhomesync
-            exit
             ;;
         2)
             config_adguardhomesync
-            rc-service adguardhome-sync restart
-            exit
             ;;
         esac
     done
 
+    msg_ok "Completed Successfully!\n"
+    echo -e "${INFO}${YW} Check it using the following URL:${CL}"
+    echo -e "${TAB}${GATEWAY}${BGN}http://${IP}${CL}"
     exit 0
 }
 
