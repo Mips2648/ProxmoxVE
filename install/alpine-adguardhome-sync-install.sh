@@ -131,6 +131,8 @@ command_background=true
 pidfile="/run/adguardhome-sync.pid"
 command_args="--config /opt/adguardhome-sync/adguardhome-sync.yaml run"
 EOF
+  chmod +x /etc/init.d/adguardhome-sync
+  rc-update add adguardhome-sync default
   rc-service adguardhome-sync start
 }
 
