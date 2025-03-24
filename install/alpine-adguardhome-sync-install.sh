@@ -27,28 +27,32 @@ get_latest_release() {
 }
 LATEST_VERSION=$(get_latest_release)
 
-msg_info "Installing Adguardhome-Sync ${LATEST_VERSION}"
-mkdir -p /opt/adguardhome-sync
-cd /opt/adguardhome-sync
-wget -q https://github.com/bakito/adguardhome-sync/releases/download/v${LATEST_VERSION}/adguardhome-sync_${LATEST_VERSION}_linux_amd64.tar.gz
-tar -xzf adguardhome-sync_${LATEST_VERSION}_linux_amd64.tar.gz -C /opt/adguardhome-sync/ --overwrite
-echo "${LATEST_VERSION}" >"/opt/adguardhome-sync_version.txt"
-msg_ok "Installed Adguardhome-Sync ${LATEST_VERSION}"
+install_adguardhomesync() {
+  mkdir -p /opt/adguardhome-sync
+  cd /opt/adguardhome-sync
+  temp_file=$(mktemp)
+  wget -q https://github.com/bakito/adguardhome-sync/releases/download/v${LATEST_VERSION}/adguardhome-sync_${LATEST_VERSION}_linux_amd64.tar.gz -O $temp_file
+  tar -xzf ${temp_file} -C /opt/adguardhome-sync/ --overwrite
+  echo "${LATEST_VERSION}" >"/opt/adguardhome-sync/version.txt"
+  rm -f $temp_file
+}
 
-msg_info "Creating Configuration"
-DEFAULT_PORT=3000
+config_adguardhomesync() {
+  DEFAULT_PORT=80
 
-read -r -p "Enter IP of the origin instance: " ORIGN_IP
-read -r -p "Enter port of the origin instance (Default: ${DEFAULT_PORT}): " ORIGIN_PORT
-read -r -p "Enter username of the origin instance: " ORIGIN_USER
-read -r -p "Enter password of the origin instance: " ORIGIN_PASS
+  read -r -p "Enter IP of the origin instance: " ORIGN_IP
+  read -r -p "Enter port of the origin instance (Default: ${DEFAULT_PORT}): " ORIGIN_PORT
+  ORIGIN_PORT=${ORIGIN_PORT:-$DEFAULT_PORT}
+  read -r -p "Enter username of the origin instance: " ORIGIN_USER
+  read -r -p "Enter password of the origin instance: " ORIGIN_PASS
 
-read -r -p "Enter IP of the replica instance: " REPLICA_IP
-read -r -p "Enter port of the replica instance (Default: ${DEFAULT_PORT}): " REPLICA_PORT
-read -r -p "Enter username of the replica instance: " REPLICA_USER
-read -r -p "Enter password of the replica instance: " REPLICA_PASS
+  read -r -p "Enter IP of the replica instance: " REPLICA_IP
+  read -r -p "Enter port of the replica instance (Default: ${DEFAULT_PORT}): " REPLICA_PORT
+  REPLICA_PORT=${REPLICA_PORT:-$DEFAULT_PORT}
+  read -r -p "Enter username of the replica instance: " REPLICA_USER
+  read -r -p "Enter password of the replica instance: " REPLICA_PASS
 
-cat <<EOF >/opt/adguardhome-sync/adguardhome-sync.yaml
+  cat <<EOF >/opt/adguardhome-sync/adguardhome-sync.yaml
 # cron expression to run in daemon mode. (default; "" = runs only once)
 cron: "*/5 * * * *"
 
@@ -115,23 +119,36 @@ features:
     accessLists: true
     rewrites: true
 EOF
-msg_ok "Default configuration created. If you want to change it, edit /opt/adguardhome-sync/adguardhome-sync.yaml"
+}
+
+setup_service() {
+  cat <<EOF >/etc/init.d/adguardhome-sync
+#!/sbin/openrc-run
+name="adguardhome-sync"
+description="adguardhome-sync"
+command="/opt/adguardhome-sync/adguardhome-sync"
+command_background=true
+pidfile="/run/adguardhome-sync.pid"
+command_args="--config /opt/adguardhome-sync/adguardhome-sync.yaml run"
+EOF
+  systemctl enable -q --now adguardhome-sync.service
+}
+
+msg_info "Installing Adguardhome-Sync ${LATEST_VERSION}"
+install_adguardhomesync
+msg_ok "Installed Adguardhome-Sync ${LATEST_VERSION}"
+
+msg_info "Creating Configuration"
+config_adguardhomesync
+msg_ok "Default configuration created. If you want to change it or if you made a mistake, edit /opt/adguardhome-sync/adguardhome-sync.yaml and restart service"
 
 msg_info "Creating Service"
-cat <<EOF >/etc/systemd/system/adguardhome-sync.service
-[Unit]
-Description=adguardhome-sync Service
-After=network.target
-
-[Service]
-ExecStart = /opt/adguardhome-sync/adguardhome-sync --config /opt/adguardhome-sync/adguardhome-sync.yaml run
-Restart=always
-
-[Install]
-WantedBy=multi-user.target
-EOF
-systemctl enable -q --now adguardhome-sync.service
-msg_ok "Created Service"
+setup_service
+msg_ok "Service created. To control it use 'rc-service adguardhome-sync {start|stop|restart|status}'"
 
 motd_ssh
 customize
+
+msg_info "Cleaning up"
+$STD apk cache clean
+msg_ok "Cleaned"
