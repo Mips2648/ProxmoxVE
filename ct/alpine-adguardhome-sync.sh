@@ -6,7 +6,7 @@ source <(curl -s https://raw.githubusercontent.com/Mips2648/ProxmoxVE/refs/heads
 # Source: https://github.com/bakito/adguardhome-sync
 
 APP="Alpine-Adguardhome-Sync"
-var_tags="Adguardhome;alpine"
+var_tags="Adguardhome-sync;alpine"
 var_cpu="1"
 var_ram="256"
 var_disk="0.2"

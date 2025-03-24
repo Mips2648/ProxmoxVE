@@ -81,7 +81,7 @@ replicas:
 # Configure the sync API server, disabled if api port is 0
 api:
   # Port, default 8080
-  port: 8080
+  port: 80
   # if username and password are defined, basic auth is applied to the sync API
   # username: username
   # password: password
