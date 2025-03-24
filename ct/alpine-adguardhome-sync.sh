@@ -151,9 +151,11 @@ function update_script() {
         case $CHOICE in
         1)
             update_adguardhomesync
+            exit
             ;;
         2)
             config_adguardhomesync
+            exit
             ;;
         esac
     done
