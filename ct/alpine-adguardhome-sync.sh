@@ -31,9 +31,6 @@ function update_adguardhomesync() {
 }
 
 function update_script() {
-    header_info
-    check_container_storage
-    check_container_resources
 
     RELEASE=$(curl -s https://api.github.com/repos/bakito/adguardhome-sync/releases/latest | grep "tag_name" | awk '{print substr($2, 3, length($2)-4) }')
     if [[ "${RELEASE}" != "$(cat /opt/adguardhome-sync/version.txt)" ]] || [[ ! -f /opt/adguardhome-sync/version.txt ]]; then
