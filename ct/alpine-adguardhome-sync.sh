@@ -188,9 +188,6 @@ function update_script() {
         esac
     done
 
-    msg_ok "Completed Successfully!\n"
-    echo -e "${INFO}${YW} Check it using the following URL:${CL}"
-    echo -e "${TAB}${GATEWAY}${BGN}http://${IP}${CL}"
     exit 0
 }
 
