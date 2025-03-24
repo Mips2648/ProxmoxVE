@@ -20,6 +20,7 @@ color
 catch_errors
 
 update_adguardhomesync() {
+    clear
     RELEASE=$(curl -s https://api.github.com/repos/bakito/adguardhome-sync/releases/latest | grep "tag_name" | awk '{print substr($2, 3, length($2)-4) }')
     if [[ "${RELEASE}" != "$(cat /opt/adguardhome-sync/version.txt)" ]] || [[ ! -f /opt/adguardhome-sync/version.txt ]]; then
         # Stopping Services
@@ -45,46 +46,98 @@ update_adguardhomesync() {
 
 config_adguardhomesync() {
     DEFAULT_PORT=80
-    echo
+    clear
     while true; do
-        read -r -p "Enter IP of the origin instance: " ORIGIN_IP
+        ORIGIN_IP=$(whiptail --title "Origin Instance" --inputbox "Enter IP of the origin instance:" 10 60 3>&1 1>&2 2>&3)
+        exit_status=$?
+        if [ $exit_status -ne 0 ]; then
+            echo "Operation canceled."
+            exit 1
+        fi
         if [[ $ORIGIN_IP =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
             break
         else
-            echo "Invalid IP address. Please try again."
+            whiptail --title "Invalid Input" --msgbox "Invalid IP address. Please try again." 10 60
         fi
+
     done
     while true; do
-        read -r -p "Enter port of the origin instance (Default: ${DEFAULT_PORT}): " ORIGIN_PORT
-        ORIGIN_PORT=${ORIGIN_PORT:-$DEFAULT_PORT}
+        ORIGIN_PORT=$(whiptail --title "Origin Instance" --inputbox "Enter port of the origin instance (Default: ${DEFAULT_PORT}):" 10 60 "${DEFAULT_PORT}" 3>&1 1>&2 2>&3)
+        exit_status=$?
+        if [ $exit_status -ne 0 ]; then
+            echo "Operation canceled."
+            exit 1
+        fi
         if [[ $ORIGIN_PORT =~ ^[0-9]+$ ]] && [ "$ORIGIN_PORT" -ge 1 ] && [ "$ORIGIN_PORT" -le 65535 ]; then
             break
         else
-            echo "Invalid port. Please enter a number between 1 and 65535."
+            whiptail --title "Invalid Input" --msgbox "Invalid port. Please enter a number between 1 and 65535." 10 60
         fi
+
     done
-    read -r -p "Enter username of the origin instance: " ORIGIN_USER
-    read -r -p "Enter password of the origin instance: " ORIGIN_PASS
+    ORIGIN_USER=$(whiptail --title "Origin Instance" --inputbox "Enter username of the origin instance:" 10 60 3>&1 1>&2 2>&3)
+    exit_status=$?
+    if [ $exit_status -ne 0 ]; then
+        echo "Operation canceled."
+        exit 1
+    fi
+    ORIGIN_PASS=$(whiptail --title "Origin Instance" --passwordbox "Enter password of the origin instance:" 10 60 3>&1 1>&2 2>&3)
+    exit_status=$?
+    if [ $exit_status -ne 0 ]; then
+        echo "Operation canceled."
+        exit 1
+    fi
 
     while true; do
-        read -r -p "Enter IP of the replica instance: " REPLICA_IP
+        REPLICA_IP=$(whiptail --title "Replica Instance" --inputbox "Enter IP of the replica instance:" 10 60 3>&1 1>&2 2>&3)
+        exit_status=$?
+        if [ $exit_status -ne 0 ]; then
+            echo "Operation canceled."
+            exit 1
+        fi
         if [[ $REPLICA_IP =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
             break
         else
-            echo "Invalid IP address. Please try again."
+            whiptail --title "Invalid Input" --msgbox "Invalid IP address. Please try again." 10 60
         fi
     done
+
     while true; do
-        read -r -p "Enter port of the replica instance (Default: ${DEFAULT_PORT}): " REPLICA_PORT
-        REPLICA_PORT=${REPLICA_PORT:-$DEFAULT_PORT}
+        REPLICA_PORT=$(whiptail --title "Replica Instance" --inputbox "Enter port of the replica instance (Default: ${DEFAULT_PORT}):" 10 60 "${DEFAULT_PORT}" 3>&1 1>&2 2>&3)
+        exit_status=$?
+        if [ $exit_status -ne 0 ]; then
+            echo "Operation canceled."
+            exit 1
+        fi
         if [[ $REPLICA_PORT =~ ^[0-9]+$ ]] && [ "$REPLICA_PORT" -ge 1 ] && [ "$REPLICA_PORT" -le 65535 ]; then
             break
         else
-            echo "Invalid port. Please enter a number between 1 and 65535."
+            whiptail --title "Invalid Input" --msgbox "Invalid port. Please enter a number between 1 and 65535." 10 60
         fi
     done
-    read -r -p "Enter username of the replica instance: " REPLICA_USER
-    read -r -p "Enter password of the replica instance: " REPLICA_PASS
+
+    REPLICA_USER=$(whiptail --title "Replica Instance" --inputbox "Enter username of the replica instance (default: ${ORIGIN_USER}):" 10 60 "${ORIGIN_USER}" 3>&1 1>&2 2>&3)
+    exit_status=$?
+    if [ $exit_status -ne 0 ]; then
+        echo "Operation canceled."
+        exit 1
+    fi
+
+    REPLICA_PASS=$(whiptail --title "Replica Instance" --passwordbox "Enter password of the replica instance (default: same as origin):" 10 60 "${ORIGIN_PASS}" 3>&1 1>&2 2>&3)
+    exit_status=$?
+    if [ $exit_status -ne 0 ]; then
+        echo "Operation canceled."
+        exit 1
+    fi
+
+    whiptail --title "Summary" --msgbox "Origin Instance:\nIP: ${ORIGIN_IP}\nPort: ${ORIGIN_PORT}\nUsername: ${ORIGIN_USER}\n\nReplica Instance:\nIP: ${REPLICA_IP}\nPort: ${REPLICA_PORT}\nUsername: ${REPLICA_USER}" 15 60
+
+    whiptail --title "Confirmation" --yesno "Is this configuration correct?\nDo you want to continue?" 10 60
+    exit_status=$?
+    if [ $exit_status -ne 0 ]; then
+        echo "Operation canceled by the user."
+        exit 1
+    fi
 
     cat <<EOF >/opt/adguardhome-sync/adguardhome-sync.yaml
 # cron expression to run in daemon mode. (default; "" = runs only once)
