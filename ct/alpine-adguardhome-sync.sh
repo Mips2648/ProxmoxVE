@@ -56,6 +56,7 @@ function update_script() {
     else
         msg_ok "No update required. Adguardhome-Sync is already at v${RELEASE}"
     fi
+    exit
 }
 
 start
