@@ -26,7 +26,8 @@ $STD apt-get install -y \
   sudo \
   mc \
   lsb-release \
-  grep
+  grep \
+  git
 msg_ok "Dependencies installed"
 
 # OS Check
@@ -38,53 +39,66 @@ fi
 msg_ok "OS check done"
 
 # Setup App
+DEFAULT_BRANCH="master"
+echo
+while true; do
+  read -r -p "Enter branch to use (master, beta, alpha...) (Default: ${DEFAULT_BRANCH}): " BRANCH
+  BRANCH=${BRANCH:-$DEFAULT_BRANCH}
+
+  if git ls-remote --heads https://github.com/jeedom/core.git "$BRANCH" | grep -q "$BRANCH"; then
+    break
+  else
+    echo "Branch '$BRANCH' does not exist. Please enter a valid branch."
+  fi
+done
+
 msg_info "Downloading Jeedom installation script"
-wget -q https://raw.githubusercontent.com/jeedom/core/master/install/install.sh
+wget -q https://raw.githubusercontent.com/jeedom/core/${BRANCH}/install/install.sh
 chmod +x install.sh
 msg_ok "Installation script downloaded"
 
 msg_info "Install Jeedom main dependencies, please wait"
-$STD ./install.sh -s 2
+$STD ./install.sh -v "$BRANCH" -s 2
 msg_ok "Installed Jeedom main dependencies"
 
 msg_info "Install Database"
-$STD ./install.sh -s 3
+$STD ./install.sh -v "$BRANCH" -s 3
 msg_ok "Database installed"
 
 msg_info "Install Apache"
-$STD ./install.sh -s 4
+$STD ./install.sh -v "$BRANCH" -s 4
 msg_ok "Apache installed"
 
 msg_info "Install PHP and dependencies"
-$STD ./install.sh -s 5
+$STD ./install.sh -v "$BRANCH" -s 5
 msg_ok "PHP installed"
 
 msg_info "Download Jeedom core"
-$STD ./install.sh -s 6
+$STD ./install.sh -v "$BRANCH" -s 6
 msg_ok "Download done"
 
 msg_info "Database customisation"
-$STD ./install.sh -s 7
+$STD ./install.sh -v "$BRANCH" -s 7
 msg_ok "Database customisation done"
 
 msg_info "Jeedom customisation"
-$STD ./install.sh -s 8
+$STD ./install.sh -v "$BRANCH" -s 8
 msg_ok "Jeedom customisation done"
 
 msg_info "Configuring Jeedom"
-$STD ./install.sh -s 9
+$STD ./install.sh -v "$BRANCH" -s 9
 msg_ok "Jeedom configured"
 
 msg_info "Installing Jeedom"
-$STD ./install.sh -s 10
+$STD ./install.sh -v "$BRANCH" -s 10
 msg_ok "Jeedom installed"
 
 msg_info "Post installation"
-$STD ./install.sh -s 11
+$STD ./install.sh -v "$BRANCH" -s 11
 msg_ok "Post installation done"
 
 msg_info "Check installation"
-$STD ./install.sh -s 12
+$STD ./install.sh -v "$BRANCH" -s 12
 msg_ok "Installation checked, everything is successfuly installed. A reboot is recommended."
 
 motd_ssh
