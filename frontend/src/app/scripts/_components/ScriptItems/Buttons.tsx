@@ -24,6 +24,8 @@ const generateSourceUrl = (slug: string, type: string) => {
       return `${baseUrl}/tools/pve/${slug}.sh`;
     case "addon":
       return `${baseUrl}/tools/addon/${slug}.sh`;
+    case "turnkey":
+      return `${baseUrl}/turnkey/${slug}.sh`;
     default:
       return `${baseUrl}/ct/${slug}.sh`; // fallback for "ct"
   }
@@ -62,7 +64,7 @@ export default function Buttons({ item }: { item: Script }) {
       icon: <Code className="h-4 w-4" />,
       text: "Install Source",
     },
-    updateSourceUrl && {
+    updateSourceUrl && item.updateable && {
       href: updateSourceUrl,
       icon: <RefreshCcw className="h-4 w-4" />,
       text: "Update Source",

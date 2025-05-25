@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 source <(curl -fsSL https://raw.githubusercontent.com/community-scripts/ProxmoxVE/main/misc/build.func)
-# Copyright (c) 2021-2025 tteck
-# Author: tteck (tteckster) | Co-Author: MickLesk (Canbiz) | Co-Author: CrazyWolf13
+# Copyright (c) 2021-2025 community-scripts ORG
+# Author: CrazyWolf13
 # License: MIT | https://github.com/community-scripts/ProxmoxVE/raw/main/LICENSE
 # Source: https://homarr.dev/
 
-APP="Homarr"
+APP="homarr"
 var_tags="${var_tags:-arr;dashboard}"
-var_cpu="${var_cpu:-2}"
-var_ram="${var_ram:-4096}"
+var_cpu="${var_cpu:-3}"
+var_ram="${var_ram:-6144}"
 var_disk="${var_disk:-8}"
 var_os="${var_os:-debian}"
 var_version="${var_version:-12}"
@@ -117,14 +117,15 @@ node apps/nextjs/server.js & PID=$!
 wait $PID
 EOF
     chmod +x /opt/run_homarr.sh
-curl -fsSL "https://github.com/homarr-labs/homarr/archive/refs/tags/v${RELEASE}.zip" -o $(basename "https://github.com/homarr-labs/homarr/archive/refs/tags/v${RELEASE}.zip")
-    unzip -q v${RELEASE}.zip
-    rm -rf v${RELEASE}.zip
+    $STD command -v jq || $STD apt-get update && $STD apt-get install -y jq
+    NODE_VERSION=$(curl -s https://raw.githubusercontent.com/homarr-labs/homarr/dev/package.json | jq -r '.engines.node | split(">=")[1] | split(".")[0]')
+    NODE_MODULE="pnpm@$(curl -s https://raw.githubusercontent.com/homarr-labs/homarr/dev/package.json | jq -r '.packageManager | split("@")[1]')"
+    install_node_and_modules
     rm -rf /opt/homarr
-    mv homarr-${RELEASE} /opt/homarr
+    fetch_and_deploy_gh_release "homarr-labs/homarr"
     mv /opt/homarr-data-backup/.env /opt/homarr/.env
     cd /opt/homarr
-    $STD pnpm install
+    $STD pnpm install --recursive --frozen-lockfile --shamefully-hoist
     $STD pnpm build
     cp /opt/homarr/apps/nextjs/next.config.ts .
     cp /opt/homarr/apps/nextjs/package.json .
@@ -150,7 +151,7 @@ curl -fsSL "https://github.com/homarr-labs/homarr/archive/refs/tags/v${RELEASE}.
     systemctl start homarr
     msg_ok "Started Services"
     msg_ok "Updated Successfully"
-    read -p "It's recommended to reboot the LXC after an update, would you like to reboot the LXC now ? (y/n): " choice
+    read -p "${TAB3}It's recommended to reboot the LXC after an update, would you like to reboot the LXC now ? (y/n): " choice
     if [[ "$choice" =~ ^[Yy]$ ]]; then
       reboot
     fi

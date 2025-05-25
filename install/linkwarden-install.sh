@@ -18,28 +18,20 @@ msg_info "Installing Dependencies"
 $STD apt-get install -y \
   make \
   git \
-  postgresql \
   build-essential \
-  cargo \
-  gnupg
+  cargo
 msg_ok "Installed Dependencies"
 
-msg_info "Setting up Node.js Repository"
-mkdir -p /etc/apt/keyrings
-curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
-echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_22.x nodistro main" >/etc/apt/sources.list.d/nodesource.list
-msg_ok "Set up Node.js Repository"
-
-msg_info "Installing Node.js/Yarn"
-$STD apt-get update
-$STD apt-get install -y nodejs
-$STD npm install -g yarn
-msg_ok "Installed Node.js/Yarn"
+NODE_VERSION="22"
+NODE_MODULE="yarn@latest"
+install_node_and_modules
+PG_VERSION="15"
+install_postgresql
 
 msg_info "Installing Rust"
 curl -fsSL https://sh.rustup.rs -o rustup-init.sh
 $STD bash rustup-init.sh -y --profile minimal
-echo 'export PATH="$HOME/.cargo/bin:$PATH"' >> ~/.bashrc
+echo 'export PATH="$HOME/.cargo/bin:$PATH"' >>~/.bashrc
 export PATH="$HOME/.cargo/bin:$PATH"
 rm rustup-init.sh
 $STD cargo install monolith
@@ -64,7 +56,7 @@ $STD sudo -u postgres psql -c "ALTER ROLE $DB_USER SET timezone TO 'UTC';"
 } >>~/linkwarden.creds
 msg_ok "Set up PostgreSQL DB"
 
-read -r -p "Would you like to add Adminer? <y/N> " prompt
+read -r -p "${TAB3}Would you like to add Adminer? <y/N> " prompt
 if [[ "${prompt,,}" =~ ^(y|yes)$ ]]; then
   msg_info "Installing Adminer"
   $STD apt install -y adminer
@@ -92,7 +84,7 @@ fi
 msg_info "Installing Linkwarden (Patience)"
 cd /opt
 RELEASE=$(curl -fsSL https://api.github.com/repos/linkwarden/linkwarden/releases/latest | grep "tag_name" | awk '{print substr($2, 2, length($2)-3) }')
-curl -fsSL "https://github.com/linkwarden/linkwarden/archive/refs/tags/${RELEASE}.zip" -o $(basename "https://github.com/linkwarden/linkwarden/archive/refs/tags/${RELEASE}.zip")
+curl -fsSL "https://github.com/linkwarden/linkwarden/archive/refs/tags/${RELEASE}.zip" -o ${RELEASE}.zip
 unzip -q ${RELEASE}.zip
 mv linkwarden-${RELEASE:1} /opt/linkwarden
 cd /opt/linkwarden
@@ -106,8 +98,9 @@ NEXTAUTH_SECRET=${SECRET_KEY}
 NEXTAUTH_URL=http://${IP}:3000
 DATABASE_URL=postgresql://${DB_USER}:${DB_PASS}@localhost:5432/${DB_NAME}
 " >$env_path
-$STD yarn build
-$STD yarn prisma migrate deploy
+$STD yarn prisma:generate
+$STD yarn web:build
+$STD yarn prisma:deploy
 echo "${RELEASE}" >/opt/${APPLICATION}_version.txt
 msg_ok "Installed Linkwarden"
 
@@ -121,7 +114,7 @@ After=network.target
 Type=exec
 Environment=PATH=$PATH
 WorkingDirectory=/opt/linkwarden
-ExecStart=/usr/bin/yarn start
+ExecStart=/usr/bin/yarn concurrently:start
 
 [Install]
 WantedBy=multi-user.target
