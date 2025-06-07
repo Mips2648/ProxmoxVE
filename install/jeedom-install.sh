@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Copyright (c) 2021-2025 community-scripts ORG
-# Author: Mips
+# Author: Mips2648
 # License: MIT | https://github.com/community-scripts/ProxmoxVE/raw/main/LICENSE
 # Source: https://jeedom.com/
 
@@ -19,18 +19,12 @@ $STD apt-get update
 $STD apt-get -o Dpkg::Options::="--force-confold" -y dist-upgrade
 msg_ok "OS upgraded"
 
-# Installing Dependencies with the 3 core dependencies (curl;sudo;mc)
 msg_info "Installing dependencies"
 $STD apt-get install -y \
-    curl \
-    sudo \
-    mc \
     lsb-release \
-    grep \
     git
 msg_ok "Dependencies installed"
 
-# OS Check
 msg_info "Checking OS version"
 if ! lsb_release -d | grep -q "Debian GNU/Linux"; then
     msg_error "Wrong OS detected. Jeedom only supports Debian"
@@ -38,7 +32,6 @@ if ! lsb_release -d | grep -q "Debian GNU/Linux"; then
 fi
 msg_ok "OS check done"
 
-# Setup App
 DEFAULT_BRANCH="master"
 echo
 while true; do
@@ -104,7 +97,6 @@ msg_ok "Installation checked, everything is successfuly installed. A reboot is r
 motd_ssh
 customize
 
-# Cleanup
 msg_info "Cleaning up"
 $STD apt-get -y autoremove
 $STD apt-get -y autoclean
