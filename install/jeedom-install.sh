@@ -25,13 +25,6 @@ $STD apt-get install -y \
     git
 msg_ok "Dependencies installed"
 
-msg_info "Checking OS version"
-if ! lsb_release -d | grep -q "Debian GNU/Linux"; then
-    msg_error "Wrong OS detected. Jeedom only supports Debian"
-    exit 1
-fi
-msg_ok "OS check done"
-
 DEFAULT_BRANCH="master"
 echo
 while true; do

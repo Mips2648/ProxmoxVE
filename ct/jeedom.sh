@@ -24,11 +24,6 @@ function update_script() {
     check_container_storage
     check_container_resources
 
-    if ! lsb_release -d | grep -q "Debian GNU/Linux"; then
-        msg_error "Wrong OS detected. Jeedom only supports Debian"
-        exit 1
-    fi
-
     if [[ ! -f /var/www/html/core/config/version ]]; then
         msg_error "No ${APP} Installation Found!"
         exit
